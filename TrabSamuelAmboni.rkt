@@ -32,6 +32,7 @@
 ;; Este personagem pode somente virar para esquerda e direita.
 
 (examples
+ (check-equal? (gira-personagem (personagem "n" 1 1) "f") "Direção invalida.")
  (check-equal? (gira-personagem (personagem "n" 1 1) "e") (personagem "o" 1 1))
  (check-equal? (gira-personagem (personagem "o" 1 1) "e") (personagem "s" 1 1))
  (check-equal? (gira-personagem (personagem "s" 1 1) "e") (personagem "l" 1 1))
@@ -49,21 +50,32 @@
 
 ;; direcao:
 ;; - String: "e" = Esquerda, gira o personagem para a esquerda, "d" = Direita, gira o personagem para a direita.
-;; gira-personagem retorna a nova direção do personagem.
+;; personagem:
+;; - Struct definida acima.
+;; gira-personagem retorna a nova direção do personagem
+;; ou uma mensagem de erro.
 
 (define (gira-personagem personagem direcao)
-  (if (string=? direcao "e") (gira-esquerda personagem) (gira-direita personagem)))
+  (cond [(string=? direcao "e") gira-esquerda personagem]
+        [(string=? direcao "d") gira-direita personagem]
+        [else "Direção invalida."]))
 
 ;; gira-esquerda retorna o personagem na nova direção
-(define (gira-esquerda personagem)
-  (cond [(string=? (personagem-direcao personagem) "n") (personagem "o" personagem-pos-linha personagem-pos-coluna)]
-        [(string=? (personagem-direcao personagem) "o") (personagem "s" personagem-pos-linha personagem-pos-coluna)]
-        [(string=? (personagem-direcao personagem) "s") (personagem "l" personagem-pos-linha personagem-pos-coluna)]
-        [(string=? (personagem-direcao personagem) "l") (personagem "n" personagem-pos-linha personagem-pos-coluna)]))
+(define (gira-esquerda personagem-aux)
+  (define direcao (personagem-direcao personagem-aux))
+  (define pos-linha (personagem-pos-linha personagem-aux))
+  (define pos-coluna (personagem-pos-coluna personagem-aux))
+  (cond [(string=? direcao "n") (personagem "o" pos-linha pos-coluna)]
+        [(string=? direcao "o") (personagem "s" pos-linha pos-coluna)]
+        [(string=? direcao "s") (personagem "l" pos-linha pos-coluna)]
+        [(string=? direcao "l") (personagem "n" pos-linha pos-coluna)]))
 
 ;; gira-direita retorna o personagem na nova direção
-(define (gira-direita personagem)
-  (cond [(string=? (personagem-direcao personagem) "n") (personagem "l" personagem-pos-linha personagem-pos-coluna)]
-        [(string=? (personagem-direcao personagem) "l") (personagem "s" personagem-pos-linha personagem-pos-coluna)]
-        [(string=? (personagem-direcao personagem) "s") (personagem "o" personagem-pos-linha personagem-pos-coluna)]
-        [(string=? (personagem-direcao personagem) "o") (personagem "n" personagem-pos-linha personagem-pos-coluna)]))
+(define (gira-direita personagem-aux)
+  (define direcao (personagem-direcao personagem-aux))
+  (define pos-linha (personagem-pos-linha personagem-aux))
+  (define pos-coluna (personagem-pos-coluna personagem-aux))
+  (cond [(string=? direcao "n") (personagem "l" pos-linha pos-coluna)]
+        [(string=? direcao "l") (personagem "s" pos-linha pos-coluna)]
+        [(string=? direcao "s") (personagem "o" pos-linha pos-coluna)]
+        [(string=? direcao "o") (personagem "n" pos-linha pos-coluna)]))
