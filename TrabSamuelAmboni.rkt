@@ -56,8 +56,8 @@
 ;; ou uma mensagem de erro.
 
 (define (gira-personagem personagem direcao)
-  (cond [(string=? direcao "e") gira-esquerda personagem]
-        [(string=? direcao "d") gira-direita personagem]
+  (cond [(string=? direcao "e") (gira-esquerda personagem)]
+        [(string=? direcao "d") (gira-direita personagem)]
         [else "Direção invalida."]))
 
 ;; gira-esquerda retorna o personagem na nova direção
@@ -65,17 +65,45 @@
   (define direcao (personagem-direcao personagem-aux))
   (define pos-linha (personagem-pos-linha personagem-aux))
   (define pos-coluna (personagem-pos-coluna personagem-aux))
-  (cond [(string=? direcao "n") (personagem "o" pos-linha pos-coluna)]
-        [(string=? direcao "o") (personagem "s" pos-linha pos-coluna)]
-        [(string=? direcao "s") (personagem "l" pos-linha pos-coluna)]
-        [(string=? direcao "l") (personagem "n" pos-linha pos-coluna)]))
+  (cond [(string=? direcao "n") (cria-personagem "o" pos-linha pos-coluna)]
+        [(string=? direcao "o") (cria-personagem "s" pos-linha pos-coluna)]
+        [(string=? direcao "s") (cria-personagem "l" pos-linha pos-coluna)]
+        [(string=? direcao "l") (cria-personagem "n" pos-linha pos-coluna)]))
 
 ;; gira-direita retorna o personagem na nova direção
 (define (gira-direita personagem-aux)
   (define direcao (personagem-direcao personagem-aux))
   (define pos-linha (personagem-pos-linha personagem-aux))
   (define pos-coluna (personagem-pos-coluna personagem-aux))
-  (cond [(string=? direcao "n") (personagem "l" pos-linha pos-coluna)]
-        [(string=? direcao "l") (personagem "s" pos-linha pos-coluna)]
-        [(string=? direcao "s") (personagem "o" pos-linha pos-coluna)]
-        [(string=? direcao "o") (personagem "n" pos-linha pos-coluna)]))
+  (cond [(string=? direcao "n") (cria-personagem "l" pos-linha pos-coluna)]
+        [(string=? direcao "l") (cria-personagem "s" pos-linha pos-coluna)]
+        [(string=? direcao "s") (cria-personagem "o" pos-linha pos-coluna)]
+        [(string=? direcao "o") (cria-personagem "n" pos-linha pos-coluna)]))
+
+(define (cria-personagem direcao pos-linha pos-coluna)
+  (personagem direcao pos-linha pos-coluna))
+
+;; passos:
+;; - Inteiro: A quantidade de casas que o personagem irá andar.
+;; personagem:
+;; - Struct definida acima.
+;; move-personagem retorna o personagem na sua nova posição no tabuleiro.
+;; ou uma mensagem de erro.
+(define (move-personagem personagem passos)
+  (define direcao (personagem-direcao personagem))
+  (cond [(string=? direcao "n") (move-norte personagem passos)]
+        [(string=? direcao "s") (move-sul personagem passos)]
+        [(string=? direcao "l") (move-leste personagem passos)]
+        [(string=? direcao "o") (move-oeste personagem passos)]))
+
+(define (move-norte personagem passos)
+  "TODO")
+
+(define (move-sul personagem passos)
+  "TODO")
+
+(define (move-leste personagem passos)
+  "TODO")
+
+(define (move-oeste personagem passos)
+  "TODO")
