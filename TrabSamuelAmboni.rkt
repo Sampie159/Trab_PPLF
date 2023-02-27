@@ -1,5 +1,6 @@
 #lang racket
 
+(require racket/format)
 (require examples)
 
 ;; Exercício 1:
@@ -125,3 +126,40 @@
   (define nova-pos (- (personagem-pos-coluna personagem) passos))
   (define pos-linha (personagem-pos-linha personagem))
   (if (< nova-pos 1) "Erro: Fora do tabuleiro." (cria-personagem "o" pos-linha nova-pos)))
+
+;; Exercício 3:
+;; Desenvolva um programa que recebe uma lista de números e produza uma lista de strings
+;; Cada string nessa lista é um número convertido
+;; Todas as strings possuem o mesmo tamanho
+
+(examples
+ (check-equal? (converte-lista empty) empty)
+ (check-equal? (converte-lista '(1 10 100)) '("  1" " 10" "100"))
+ (check-equal? (converte-lista '(1321 321 5346526 12)) '("   1321" "    321" "5346526" "     12"))
+ (check-equal? (converte-lista '(1000 100 10 1)) '("1000" " 100" "  10" "   1")))
+
+;; converte-lista recebe uma lista de números e retorna uma lista de strings
+(define (converte-lista lista)
+  (cond [(empty? lista) empty]
+        [else
+         (define lista-convertida (converte-lista-aux lista))
+         (define tamanho-max (maior-string lista-convertida))
+         (ajeita-string lista-convertida tamanho-max)]))
+
+;; converte-lista-aux faz a conversão dos números da lista para strings
+(define (converte-lista-aux lista)
+  (cond [(empty? lista) empty]
+        [else (cons (~a (first lista)) (converte-lista-aux (rest lista)))]))
+
+;; encontra o tamanho da maior string da lista
+(define (maior-string lista)
+  (cond [(empty? lista) 0]
+        [else (max (string-length (first lista)) (maior-string (rest lista)))]))
+
+;; refatora as strings para ajeitá-las ao tamanho da maior
+(define (ajeita-string lista tamanho-max)
+  (cond [(empty? lista) empty]
+        [else
+         (define diferenca (- tamanho-max (string-length (first lista))))
+         (define primeiro-convertido (string-append (make-string diferenca #\space) (first lista)))
+         (cons primeiro-convertido (ajeita-string (rest lista) tamanho-max))]))
