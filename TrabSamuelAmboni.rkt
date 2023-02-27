@@ -28,7 +28,6 @@
 
 ;; Exercício 2:
 ;; Desenvolva um programa que movimenta um personagem num tabuleiro 10x10.
-;; Este personagem pode somente andar em linha reta.
 ;; Este personagem pode somente virar para esquerda e direita.
 
 (examples
@@ -83,6 +82,17 @@
 (define (cria-personagem direcao pos-linha pos-coluna)
   (personagem direcao pos-linha pos-coluna))
 
+;; Este personagem só poderá também andar em linha reta, na direção em que está apontado.
+(examples
+ (check-equal? (move-personagem (personagem "n" 1 1) 7) (personagem "n" 8 1))
+ (check-equal? (move-personagem (personagem "s" 10 1) 7) (personagem "s" 3 1))
+ (check-equal? (move-personagem (personagem "l" 1 1) 7) (personagem "l" 1 8))
+ (check-equal? (move-personagem (personagem "o" 1 10) 7) (personagem "o" 1 3))
+ (check-equal? (move-personagem (personagem "n" 10 1) 1) "Erro: Fora do tabuleiro.")
+ (check-equal? (move-personagem (personagem "s" 1 1) 1) "Erro: Fora do tabuleiro.")
+ (check-equal? (move-personagem (personagem "l" 1 10) 1) "Erro: Fora do tabuleiro.")
+ (check-equal? (move-personagem (personagem "o" 1 1) 1) "Erro: Fora do tabuleiro."))
+
 ;; passos:
 ;; - Inteiro: A quantidade de casas que o personagem irá andar.
 ;; personagem:
@@ -97,13 +107,21 @@
         [(string=? direcao "o") (move-oeste personagem passos)]))
 
 (define (move-norte personagem passos)
-  "TODO")
+  (define nova-pos (+ (personagem-pos-linha personagem) passos))
+  (define pos-coluna (personagem-pos-coluna personagem))
+  (if (> nova-pos 10) "Erro: Fora do tabuleiro." (cria-personagem "n" nova-pos pos-coluna)))
 
 (define (move-sul personagem passos)
-  "TODO")
+  (define nova-pos (- (personagem-pos-linha personagem) passos))
+  (define pos-coluna (personagem-pos-coluna personagem))
+  (if (< nova-pos 1) "Erro: Fora do tabuleiro." (cria-personagem "s" nova-pos pos-coluna)))
 
 (define (move-leste personagem passos)
-  "TODO")
+  (define nova-pos (+ (personagem-pos-coluna personagem) passos))
+  (define pos-linha (personagem-pos-linha personagem))
+  (if (> nova-pos 10) "Erro: Fora do tabuleiro." (cria-personagem "l" pos-linha nova-pos )))
 
 (define (move-oeste personagem passos)
-  "TODO")
+  (define nova-pos (- (personagem-pos-coluna personagem) passos))
+  (define pos-linha (personagem-pos-linha personagem))
+  (if (< nova-pos 1) "Erro: Fora do tabuleiro." (cria-personagem "o" pos-linha nova-pos)))
