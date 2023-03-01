@@ -167,33 +167,26 @@
 ;; Exercício 4:
 ;; Desenvolva um programa que recebe uma string e confere se ela é um palíndromo
 
-(examples
-  (check-equal? (palindromo? "hello world!") #f)
-  (check-equal? (palindromo? "") #t)
-  (check-equal? (palindromo? "a") #t)
-  (check-equal? (palindromo? "abc") #f)
-  (check-equal? (palindromo? "a. b/a") #t)
-  (check-equal? (palindromo? "mãe é âm") #t))
+;; (examples
+;;  (check-equal? (palindromo? "hello world!") #f)
+;;  (check-equal? (palindromo? "") #t)
+;;  (check-equal? (palindromo? "a") #t)
+;;  (check-equal? (palindromo? "abc") #f)
+;;  (check-equal? (palindromo? "a. b/a") #t)
+;;  (check-equal? (palindromo? "mãe é âm") #f))
 
 ;; palindromo? recebe uma string texto e retorna um boolean
 ;; #t caso palíndromo #f caso contrário
-(define (palindromo? texto)
-  (define string-limpa (limpa-string texto))
-  (aux-palindromo? string-limpa))
+;; (define (palindromo? texto)
+;;   (define tamanho (string-length texto))
+;;   (define zero-ou-um? (or (= 1 tamanho) (zero? tamanho)))
+;;   (cond [zero-ou-um? #t]
+;;         [else
+;;         (define string-limpa (limpa-string texto))]))
 
-;; Recebe uma string limpa e retorna um booleano #t se for palíndromo, #f caso contrário.
-(define (aux-palindromo? texto)
-  (define ultimo-indice (- (string-length texto) 1))
-  (cond [(<= (string-length texto) 1) #t]
-        [else (cond [(char=? (string-ref texto 0) (string-ref texto ultimo-indice)) (aux-palindromo? (substring texto 1 ultimo-indice))]
-                    [else #f])]))
-
-
-;; Recebe uma string qualquer e retorna uma string "limpa", sem diacriticos, espaços ou caracteres especiais.
 (define (limpa-string texto)
   (define caracteres (string-split (string-downcase texto) ""))
-  (junta-string (remove-especiais caracteres)))
-
+  (remove-especiais caracteres))
 
 (define (remove-especiais lista-caracter)
   (cond [(empty? lista-caracter) empty]
@@ -202,35 +195,20 @@
                     [(i-diacritico? (first lista-caracter)) (cons "i" (remove-especiais (rest lista-caracter)))]
                     [(o-diacritico? (first lista-caracter)) (cons "o" (remove-especiais (rest lista-caracter)))]
                     [(u-diacritico? (first lista-caracter)) (cons "u" (remove-especiais (rest lista-caracter)))]
-                    [(letra? (first lista-caracter)) (cons (first lista-caracter) (remove-especiais (rest lista-caracter)))]
-                    [else (remove-especiais (rest lista-caracter))])]))
+                    [(char-alphabetic? (string-ref (first lista-caracter) 0)) (cons (first lista-caracter) (remove-especiais (rest lista-caracter)))]
+                    [else (cons (remove-especiais (rest lista-caracter)))])]))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "a" com diacrítico, #f caso contrário
 (define (a-diacritico? letra)
   (if (or (string=? letra "ã") (string=? letra "á") (string=? letra "â") (string=? letra "à")) #t #f))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "e" com diacrítico, #f caso contrário
 (define (e-diacritico? letra)
   (if (or (string=? letra "é") (string=? letra "ê")) #t #f))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "i" com diacrítico, #f caso contrário
 (define (i-diacritico? letra)
   (if (or (string=? letra "í") (string=? letra "î")) #t #f))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "o" com diacrítico, #f caso contrário
 (define (o-diacritico? letra)
   (if (or (string=? letra "ó") (string=? letra "õ") (string=? letra "ô")) #t #f))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "u" com diacrítico, #f caso contrário
 (define (u-diacritico? letra)
   (if (or (string=? letra "ú") (string=? letra "û") (string=? letra "ü")) #t #f))
-
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja uma letra, #f caso contrário.
-(define (letra? caracter)
-  (if (zero? (string-length caracter)) #f
-      (char-alphabetic? (string-ref caracter 0))))
-
-;; Recebe uma lista de "caracteres" (strings de tamanho 1) e retorna uma string.
-(define (junta-string lista-caracter)
-  (cond [(empty? lista-caracter) ""]
-        [else (string-append (first lista-caracter) (junta-string (rest lista-caracter)))]))
