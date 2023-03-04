@@ -173,7 +173,10 @@
   (check-equal? (palindromo? "a") #t)
   (check-equal? (palindromo? "abc") #f)
   (check-equal? (palindromo? "a. b/a") #t)
-  (check-equal? (palindromo? "mãe é âm") #t))
+  (check-equal? (palindromo? "mãe é âm") #t)
+  (check-equal? (palindromo? "12345") #f)
+  (check-equal? (palindromo? "123321") #t)
+  (check-equal? (palindromo? "a123b321a") #t))
 
 ;; palindromo? recebe uma string texto e retorna um boolean
 ;; #t caso palíndromo #f caso contrário
@@ -228,9 +231,36 @@
 ;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja uma letra, #f caso contrário.
 (define (letra? caracter)
   (if (zero? (string-length caracter)) #f
-      (char-alphabetic? (string-ref caracter 0))))
+      (or (char-alphabetic? (string-ref caracter 0)) (char-numeric? (string-ref caracter 0)))))
 
 ;; Recebe uma lista de "caracteres" (strings de tamanho 1) e retorna uma string.
 (define (junta-string lista-caracter)
   (cond [(empty? lista-caracter) ""]
         [else (string-append (first lista-caracter) (junta-string (rest lista-caracter)))]))
+
+;; Exercício 6
+;; Desenvolva um programa que recebe uma string e verifica se ela é um palíndromo
+
+(examples
+  (check-equal? (palindromo-estiloso? "hello world!") #f)
+  (check-equal? (palindromo-estiloso? "") #t)
+  (check-equal? (palindromo-estiloso? "a") #t)
+  (check-equal? (palindromo-estiloso? "abc") #f)
+  (check-equal? (palindromo-estiloso? "a. b/a") #t)
+  (check-equal? (palindromo-estiloso? "mãe é âm") #t)
+  (check-equal? (palindromo-estiloso? "12345") #f)
+  (check-equal? (palindromo-estiloso? "123321") #t)
+  (check-equal? (palindromo-estiloso? "a123b321a") #t))
+
+;; Recebe uma string e retorna um booleano. #t caso a string seja um palíndromo, #f caso contrário.
+(define (palindromo-estiloso? texto)
+  (cond [(<= (string-length texto) 1) #t]
+        [else
+         (define lista-caracter (string->list (string-normalize-nfd (string-downcase texto))))
+         (define lista-filtrada (filter alfanumerico? lista-caracter))
+         (define listaf-invertida (foldl cons empty lista-filtrada))
+         (if (string=? (list->string lista-filtrada) (list->string listaf-invertida)) #t #f)]))
+
+;; Recebe um character e retorna um booleano. #t caso seja alfanumérico (Alfabético ou Numérico), #f caso contrário.
+(define (alfanumerico? char)
+  (or (char-alphabetic? char) (char-numeric? char)))
