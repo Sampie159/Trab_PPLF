@@ -316,8 +316,8 @@
   (define i-diacritico '(#\í))
   (define o-diacritico '(#\ó #\õ #\ô))
   (define u-diacritico '(#\ú #\ü))
-  (define (contem-char? lista char)
-    (foldr (lambda (x) (char=? x char)) #f lista))
+  (define (contem-char? lista letra)
+    (foldr (lambda (x y) (or y (char=? x letra))) #f lista))
   (cond [(contem-char? a-diacritico letra) #\a]
         [(contem-char? e-diacritico letra) #\e]
         [(contem-char? i-diacritico letra) #\i]
