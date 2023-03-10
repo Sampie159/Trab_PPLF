@@ -151,15 +151,15 @@
 (define (converte-lista lista)
   (cond [(empty? lista) empty]
         [else
-         (define lista-convertida (converte-lista-aux lista))
+         (define lista-convertida (converte-num->string lista))
          (define tamanho-max (maior-string lista-convertida))
          (ajeita-string lista-convertida tamanho-max)]))
 
 ;; Lista -> Lista
 ;; converte-lista-aux faz a conversão dos números da lista para strings
-(define (converte-lista-aux lista)
+(define (converte-num->string lista)
   (cond [(empty? lista) empty]
-        [else (cons (~a (first lista)) (converte-lista-aux (rest lista)))]))
+        [else (cons (~a (first lista)) (converte-num->string (rest lista)))]))
 
 ;; Lista -> Inteiro
 ;; encontra o tamanho da maior string da lista
@@ -249,6 +249,34 @@
   (cond [(empty? lista-caracter) ""]
         [else (string-append (first lista-caracter) (junta-string (rest lista-caracter)))]))
 
+;; Exercício 5
+;; Desenvolva um programa que recebe uma lista de números e retorna uma lista de strings
+;; Cada string nessa lista é um número convertido
+;; Todas as strings possuem o mesmo tamanho
+
+(examples
+ (check-equal? (converte-estiloso empty) empty)
+ (check-equal? (converte-estiloso '(1 10 100)) '("  1" " 10" "100"))
+ (check-equal? (converte-estiloso '(1321 321 5346526 12)) '("   1321" "    321" "5346526" "     12"))
+ (check-equal? (converte-estiloso '(1000 100 10 1)) '("1000" " 100" "  10" "   1")))
+
+;; Lista -> Lista
+;; Recebe uma lista de números e retorna uma lista de strings
+(define (converte-estiloso lista)
+  (define lista-convertida (converte-num->string lista))
+  (define tamanho (tam-maior-string lista-convertida))
+  (ajeita-string lista-convertida tamanho))
+
+;; Lista -> Inteiro
+;; Recebe uma lista de strings e retorna um inteiro igual ao tamanho da maior string na lista
+(define (tam-maior-string lst)
+  (define (tam-aux tam lst)
+    (if (empty? lst) tam
+      (cond [(>= (string-length (first lst)) tam)
+             (tam-aux (string-length (first lst)) (rest lst))]
+            [else (tam-aux tam (rest lst))])))
+  (tam-aux 0 lst))
+
 ;; Exercício 6
 ;; Desenvolva um programa que recebe uma string e verifica se ela é um palíndromo
 ;; Utilizando map, filter e foldl pelo menos uma vez cada.
@@ -289,9 +317,7 @@
   (define o-diacritico '(#\ó #\õ #\ô))
   (define u-diacritico '(#\ú #\ü))
   (define (contem-char? lista char)
-    (if (empty? lista) #f
-        (cond [(char=? (first lista) letra) #t]
-              [else (contem-char? (rest lista) letra)])))
+    (foldr (lambda (x) (char=? x char)) #f lista))
   (cond [(contem-char? a-diacritico letra) #\a]
         [(contem-char? e-diacritico letra) #\e]
         [(contem-char? i-diacritico letra) #\i]
