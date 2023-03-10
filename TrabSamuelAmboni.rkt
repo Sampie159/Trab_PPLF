@@ -52,6 +52,7 @@
 ;; - String: "e" = Esquerda, gira o personagem para a esquerda, "d" = Direita, gira o personagem para a direita.
 ;; personagem:
 ;; - Struct definida acima.
+;; (personagem, String) -> personagem | String
 ;; gira-personagem retorna a nova direção do personagem
 ;; ou uma mensagem de erro.
 
@@ -60,7 +61,9 @@
         [(string=? direcao "d") (gira-direita personagem)]
         [else "Direção invalida."]))
 
+;; personagem -> personagem
 ;; gira-esquerda retorna o personagem na nova direção
+;; o mesmo se faz para a função abaixo, só que para a direita.
 (define (gira-esquerda personagem-aux)
   (define direcao (personagem-direcao personagem-aux))
   (define pos-linha (personagem-pos-linha personagem-aux))
@@ -70,7 +73,6 @@
         [(string=? direcao "s") (cria-personagem "l" pos-linha pos-coluna)]
         [(string=? direcao "l") (cria-personagem "n" pos-linha pos-coluna)]))
 
-;; gira-direita retorna o personagem na nova direção
 (define (gira-direita personagem-aux)
   (define direcao (personagem-direcao personagem-aux))
   (define pos-linha (personagem-pos-linha personagem-aux))
@@ -80,6 +82,8 @@
         [(string=? direcao "s") (cria-personagem "o" pos-linha pos-coluna)]
         [(string=? direcao "o") (cria-personagem "n" pos-linha pos-coluna)]))
 
+;; (String, Inteiro, Inteiro) -> personagem
+;; cria-personagem retorna um struct personagem.
 (define (cria-personagem direcao pos-linha pos-coluna)
   (personagem direcao pos-linha pos-coluna))
 
@@ -98,6 +102,7 @@
 ;; - Inteiro: A quantidade de casas que o personagem irá andar.
 ;; personagem:
 ;; - Struct definida acima.
+;; (personagem, Inteiro) -> personagem
 ;; move-personagem retorna o personagem na sua nova posição no tabuleiro.
 ;; ou uma mensagem de erro.
 (define (move-personagem personagem passos)
@@ -107,6 +112,9 @@
         [(string=? direcao "l") (move-leste personagem passos)]
         [(string=? direcao "o") (move-oeste personagem passos)]))
 
+;; (personagem, Inteiro) -> personagem
+;; recebe um struct personagem e um inteiro, retorna um personagem na nova posição
+;; o mesmo se faz para as funções à baixo.
 (define (move-norte personagem passos)
   (define nova-pos (+ (personagem-pos-linha personagem) passos))
   (define pos-coluna (personagem-pos-coluna personagem))
@@ -138,6 +146,7 @@
  (check-equal? (converte-lista '(1321 321 5346526 12)) '("   1321" "    321" "5346526" "     12"))
  (check-equal? (converte-lista '(1000 100 10 1)) '("1000" " 100" "  10" "   1")))
 
+;; Lista -> Lista
 ;; converte-lista recebe uma lista de números e retorna uma lista de strings
 (define (converte-lista lista)
   (cond [(empty? lista) empty]
@@ -146,16 +155,20 @@
          (define tamanho-max (maior-string lista-convertida))
          (ajeita-string lista-convertida tamanho-max)]))
 
+;; Lista -> Lista
 ;; converte-lista-aux faz a conversão dos números da lista para strings
 (define (converte-lista-aux lista)
   (cond [(empty? lista) empty]
         [else (cons (~a (first lista)) (converte-lista-aux (rest lista)))]))
 
+;; Lista -> Inteiro
 ;; encontra o tamanho da maior string da lista
 (define (maior-string lista)
   (cond [(empty? lista) 0]
         [else (max (string-length (first lista)) (maior-string (rest lista)))]))
 
+;; (Lista, Inteiro) -> Lista
+;; recebe uma lista de strings e um inteiro, retorna uma lista de strings
 ;; refatora as strings para ajeitá-las ao tamanho da maior
 (define (ajeita-string lista tamanho-max)
   (cond [(empty? lista) empty]
@@ -176,14 +189,17 @@
   (check-equal? (palindromo? "mãe é âm") #t)
   (check-equal? (palindromo? "12345") #f)
   (check-equal? (palindromo? "123321") #t)
-  (check-equal? (palindromo? "a123b321a") #t))
+  (check-equal? (palindromo? "a123b321a") #t)
+  (check-equal? (palindromo? "1 Casa vérde, e drev as ac 1") #t))
 
+;; String -> Boolean
 ;; palindromo? recebe uma string texto e retorna um boolean
 ;; #t caso palíndromo #f caso contrário
 (define (palindromo? texto)
   (define string-limpa (limpa-string texto))
   (aux-palindromo? string-limpa))
 
+;; String -> Boolean
 ;; Recebe uma string limpa e retorna um booleano #t se for palíndromo, #f caso contrário.
 (define (aux-palindromo? texto)
   (define ultimo-indice (- (string-length texto) 1))
@@ -191,48 +207,43 @@
         [else (cond [(char=? (string-ref texto 0) (string-ref texto ultimo-indice)) (aux-palindromo? (substring texto 1 ultimo-indice))]
                     [else #f])]))
 
-
+;; String -> String
 ;; Recebe uma string qualquer e retorna uma string "limpa", sem diacriticos, espaços ou caracteres especiais.
 (define (limpa-string texto)
   (define caracteres (string-split (string-downcase texto) ""))
   (junta-string (remove-especiais caracteres)))
 
-
+;; Lista -> Lista
+;; Recebe uma lista de "caracter" (string de tamanho 1) e retorna uma lista de "caracter" sem diacriticos, caracteres especiais ou espaços.
 (define (remove-especiais lista-caracter)
+  (define a-diacritico '("ã" "á" "à" "â"))
+  (define e-diacritico '("é" "ê"))
+  (define i-diacritico '("í" "ì"))
+  (define o-diacritico '("ó" "õ" "ô"))
+  (define u-diacritico '("ú" "ü"))
   (cond [(empty? lista-caracter) empty]
-        [else (cond [(a-diacritico? (first lista-caracter)) (cons "a" (remove-especiais (rest lista-caracter)))]
-                    [(e-diacritico? (first lista-caracter)) (cons "e" (remove-especiais (rest lista-caracter)))]
-                    [(i-diacritico? (first lista-caracter)) (cons "i" (remove-especiais (rest lista-caracter)))]
-                    [(o-diacritico? (first lista-caracter)) (cons "o" (remove-especiais (rest lista-caracter)))]
-                    [(u-diacritico? (first lista-caracter)) (cons "u" (remove-especiais (rest lista-caracter)))]
-                    [(letra? (first lista-caracter)) (cons (first lista-caracter) (remove-especiais (rest lista-caracter)))]
+        [else (cond [(contem? a-diacritico (first lista-caracter)) (cons "a" (remove-especiais (rest lista-caracter)))]
+                    [(contem? e-diacritico (first lista-caracter)) (cons "e" (remove-especiais (rest lista-caracter)))]
+                    [(contem? i-diacritico (first lista-caracter)) (cons "i" (remove-especiais (rest lista-caracter)))]
+                    [(contem? o-diacritico (first lista-caracter)) (cons "o" (remove-especiais (rest lista-caracter)))]
+                    [(contem? u-diacritico (first lista-caracter)) (cons "u" (remove-especiais (rest lista-caracter)))]
+                    [(letra-ou-num? (first lista-caracter)) (cons (first lista-caracter) (remove-especiais (rest lista-caracter)))]
                     [else (remove-especiais (rest lista-caracter))])]))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "a" com diacrítico, #f caso contrário
-(define (a-diacritico? letra)
-  (if (or (string=? letra "ã") (string=? letra "á") (string=? letra "â") (string=? letra "à")) #t #f))
+;; (Lista, String) -> Boolean
+;; Recebe uma lista e um "caracter" (string de tamanho 1) letra e retorna um booleano, #t caso lista contenha letra, #f caso contrário.
+(define (contem? lista letra)
+  (if (empty? lista) #f
+  (cond [(string=? (first lista) letra) #t]
+        [else (contem? (rest lista) letra)])))
 
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "e" com diacrítico, #f caso contrário
-(define (e-diacritico? letra)
-  (if (or (string=? letra "é") (string=? letra "ê")) #t #f))
-
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "i" com diacrítico, #f caso contrário
-(define (i-diacritico? letra)
-  (if (or (string=? letra "í") (string=? letra "î")) #t #f))
-
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "o" com diacrítico, #f caso contrário
-(define (o-diacritico? letra)
-  (if (or (string=? letra "ó") (string=? letra "õ") (string=? letra "ô")) #t #f))
-
-;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja "u" com diacrítico, #f caso contrário
-(define (u-diacritico? letra)
-  (if (or (string=? letra "ú") (string=? letra "û") (string=? letra "ü")) #t #f))
-
+;; String -> Boolean
 ;; Recebe um "caracter" (string de tamanho 1) e retorna um booleano, #t caso seja uma letra, #f caso contrário.
-(define (letra? caracter)
+(define (letra-ou-num? caracter)
   (if (zero? (string-length caracter)) #f
       (or (char-alphabetic? (string-ref caracter 0)) (char-numeric? (string-ref caracter 0)))))
 
+;; Lista -> String
 ;; Recebe uma lista de "caracteres" (strings de tamanho 1) e retorna uma string.
 (define (junta-string lista-caracter)
   (cond [(empty? lista-caracter) ""]
@@ -240,6 +251,7 @@
 
 ;; Exercício 6
 ;; Desenvolva um programa que recebe uma string e verifica se ela é um palíndromo
+;; Utilizando map, filter e foldl pelo menos uma vez cada.
 
 (examples
   (check-equal? (palindromo-estiloso? "hello world!") #f)
@@ -250,17 +262,39 @@
   (check-equal? (palindromo-estiloso? "mãe é âm") #t)
   (check-equal? (palindromo-estiloso? "12345") #f)
   (check-equal? (palindromo-estiloso? "123321") #t)
-  (check-equal? (palindromo-estiloso? "a123b321a") #t))
+  (check-equal? (palindromo-estiloso? "a123b321a") #t)
+  (check-equal? (palindromo-estiloso? "1 Casa vérde, e drev as ac 1") #t))
 
+;; String -> Boolean
 ;; Recebe uma string e retorna um booleano. #t caso a string seja um palíndromo, #f caso contrário.
 (define (palindromo-estiloso? texto)
   (cond [(<= (string-length texto) 1) #t]
         [else
-         (define lista-caracter (string->list (string-normalize-nfd (string-downcase texto))))
+         (define lista-caracter (map limpa-letra (string->list(string-downcase texto))))
          (define lista-filtrada (filter alfanumerico? lista-caracter))
          (define listaf-invertida (foldl cons empty lista-filtrada))
          (if (string=? (list->string lista-filtrada) (list->string listaf-invertida)) #t #f)]))
 
-;; Recebe um character e retorna um booleano. #t caso seja alfanumérico (Alfabético ou Numérico), #f caso contrário.
+;; Caracter -> Boolean
+;; Recebe um caracter e retorna um booleano. #t caso seja alfanumérico (Alfabético ou Numérico), #f caso contrário.
 (define (alfanumerico? char)
   (or (char-alphabetic? char) (char-numeric? char)))
+
+;; Caracter -> Caracter
+;; Recebe um caracter e retorna um caracter sem diacríticos.
+(define (limpa-letra letra)
+  (define a-diacritico '(#\á #\à #\ã #\â))
+  (define e-diacritico '(#\é #\ê))
+  (define i-diacritico '(#\í))
+  (define o-diacritico '(#\ó #\õ #\ô))
+  (define u-diacritico '(#\ú #\ü))
+  (define (contem-char? lista char)
+    (if (empty? lista) #f
+        (cond [(char=? (first lista) letra) #t]
+              [else (contem-char? (rest lista) letra)])))
+  (cond [(contem-char? a-diacritico letra) #\a]
+        [(contem-char? e-diacritico letra) #\e]
+        [(contem-char? i-diacritico letra) #\i]
+        [(contem-char? o-diacritico letra) #\o]
+        [(contem-char? u-diacritico letra) #\u]
+        [else letra]))
