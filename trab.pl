@@ -42,8 +42,8 @@
 jogo_solucao(JogoInicial, JogoFinal) :-
     jogo(L, C, Blocos) = JogoInicial,
     jogo(L, C, Solucao) = JogoFinal,
-    permutation(Blocos, Solucao),
-    blocos_adequados(JogoFinal).
+    blocos_adequados(JogoFinal),
+    permutation(Blocos, Solucao).
 
 
 :- begin_tests(pequeno).
@@ -256,24 +256,18 @@ blocos_adequados(jogo(_, _, [])).
 blocos_adequados(jogo(1, 1, _)).
 
 % ou se todos os blocos são adequados.
-blocos_adequados(Jogo) :- 
+blocos_adequados(Jogo) :-
     blocos_adequados(Jogo, 0).
 
 blocos_adequados(jogo(L, C, _), P) :-
+    % put('d'),
     P #>= L * C, !.
 
 blocos_adequados(Jogo, P) :-
+    % put('c'),
     bloco_adequado(Jogo, P),
     P0 #= P + 1,
     blocos_adequados(Jogo, P0).
-
-% :- begin_tests(bloco_adequado).
-
-% test(ba0, Blocos = [
-%     bloco()
-% ])
-
-% :- end_tests(bloco_adequado).
 
 %% bloco_adequado(?Jogo, +P) is semidet
 %
@@ -282,132 +276,121 @@ blocos_adequados(Jogo, P) :-
 
 % Verdadeiro se o primeiro bloco é adequado para uma lista Blocos. 
 bloco_adequado(jogo(1, _, Blocos), 0) :-
-    put(0),
+    % put('0'),
     nth0(0, Blocos, bloco(_, X, _, _)),
-    nth0(1, Blocos, bloco(_, _, _, X)).
+    nth0(1, Blocos, bloco(_, _, _, X)), !.
 
 % Verdadeiro se o último bloco é adequado para uma lista Blocos.
 bloco_adequado(jogo(1, C, Blocos), P) :-
-    put(1),
+    % put('1'),
     P #= C - 1,
     Penultimo #= C - 2,
     nth0(P, Blocos, bloco(_, _, _, X)),
-    nth0(Penultimo, Blocos, bloco(_, X, _, _)).
+    nth0(Penultimo, Blocos, bloco(_, X, _, _)), !.
 
 % Verdadeiro se um elemento qualquer do meio da lista Blocos é adequado.
 bloco_adequado(jogo(1, C, Blocos), P) :-
-    put(2),
+    % put('2'),
     P #> 1, P #< C - 1,
     Direita #= P + 1,
     Esquerda #= P - 1,
     nth0(P, Blocos, bloco(_, X, _, Y)),
     nth0(Direita, Blocos, bloco(_, Y, _, _)),
-    nth0(Esquerda, Blocos, bloco(_, _, _, X)).
+    nth0(Esquerda, Blocos, bloco(_, _, _, X)), !.
 
 % Verdadeiro se o bloco no canto superior esquerdo de Blocos é adequado 
 % para uma matriz bi-dimensional.
-bloco_adequado(jogo(L, C, Blocos), 0) :-
-    put(3),
-    L #> 1,
+bloco_adequado(jogo(_, C, Blocos), 0) :-
+    % put('3'),
     nth0(1, Blocos, bloco(_, _, _, X)),
     nth0(C, Blocos, bloco(Y, _, _, _)),
-    nth0(0, Blocos, bloco(_, X, Y, _)).
+    nth0(0, Blocos, bloco(_, X, Y, _)), !.
 
 % Verdadeiro se o bloco no canto superior direito de Blocos é adequado
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(_, C, Blocos), P) :-
-    put(4),
+    % put('4'),
     P #= C - 1,
     Esquerda #= P - 1,
     Abaixo #= P + C,
     nth0(P, Blocos, bloco(_, _, X, Y)),
     nth0(Esquerda, Blocos, bloco(_, Y, _, _)),
-    nth0(Abaixo, Blocos, bloco(X, _, _, _)).
+    nth0(Abaixo, Blocos, bloco(X, _, _, _)), !.
 
 % Verdadeiro se o bloco no canto inferior direito de Blocos é adequado
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    put(5),
-    P #= L * C - 1,
+    % put('5'),
+    P #= (L * C - 1),
     Esquerda #= P - 1,
     Acima #= P - C,
     nth0(P, Blocos, bloco(X, _, _, Y)),
     nth0(Esquerda, Blocos, bloco(_, Y, _, _)),
-    nth0(Acima, Blocos, bloco(_, _, X, _)).
+    nth0(Acima, Blocos, bloco(_, _, X, _)), !.
 
 % Verdadeiro se o bloco no canto inferior esquerdo de Blocos é adequado
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    put(6),
-    P #= L * C - L,
+    % put('6'),
+    P #= (L * C - L),
     Direita #= P + 1,
     Acima #= P - C,
     nth0(P, Blocos, bloco(X, Y, _, _)),
     nth0(Direita, Blocos, bloco(_, _, _, Y)),
-    nth0(Acima, Blocos, bloco(_, _, X, _)).
+    nth0(Acima, Blocos, bloco(_, _, X, _)), !.
 
-% Verdadeiro se um bloco qualquer na primeira linha de Blocos é adequado
-% para uma matriz bi-dimensional.
+% Verdadeiro se um bloco qualquer na primeira linha é adequado
 bloco_adequado(jogo(_, C, Blocos), P) :-
-    put(7),
-    P #< C - 1,
+    P #< C - 1, P #> 0,
+    Abaixo #= P + C,
     Esquerda #= P - 1,
     Direita #= P + 1,
-    Abaixo #= P + C,
     nth0(P, Blocos, bloco(_, X, Y, Z)),
+    nth0(Abaixo, Blocos, bloco(Y, _, _, _)),
     nth0(Esquerda, Blocos, bloco(_, Z, _, _)),
-    nth0(Direita, Blocos, bloco(_, _, _, X)),
-    nth0(Abaixo, Blocos, bloco(Y, _, _, _)).
+    nth0(Direita, Blocos, bloco(_, _, _, X)), !.
 
-% Verdadeiro se um bloco qualquer na última linha de Blocos é adequado
-% para uma matriz bi-dimensional.
+% Verdadeiro se um bloco qualquer na última linha é adequado
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    put(8),
-    P #< C * L - 1, P #> C * L - L,
+    P #< (L * C - 1), P #> (L * C - L),
+    Acima #= P - C,
     Esquerda #= P - 1,
     Direita #= P + 1,
-    Acima #= P - C,
-    nth0(P, Blocos, bloco(Y, X, _, Z)),
+    nth0(P, Blocos, bloco(X, Y, _, Z)),
+    nth0(Acima, Blocos, bloco(_, _, X, _)),
     nth0(Esquerda, Blocos, bloco(_, Z, _, _)),
-    nth0(Direita, Blocos, bloco(_, _, _, X)),
-    nth0(Acima, Blocos, bloco(_, _, Y, _)).
+    nth0(Direita, Blocos, bloco(_, _, _, Y)), !.
 
-% Verdadeiro se um bloco qualquer na primeira coluna de Blocos é adequado
-% para uma matriz bi-dimensional.
+% Verdadeiro se um bloco qualquer na primeira coluna é adequado
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    put(9),
-    P mod C #= 0, P #> 0, P #< L * C - L,
-    Direita #= P + 1,
-    Abaixo #= P + C,
+    P mod C #= 0, P #\= 0, P #\= (L * C - L),
     Acima #= P - C,
+    Abaixo #= P + C,
+    Direita #= P + 1,
     nth0(P, Blocos, bloco(X, Y, Z, _)),
     nth0(Acima, Blocos, bloco(_, _, X, _)),
-    nth0(Direita, Blocos, bloco(_, _, _, Y)),
-    nth0(Abaixo, Blocos, bloco(Z, _, _, _)).
+    nth0(Abaixo, Blocos, bloco(Z, _, _, _)),
+    nth0(Direita, Blocos, bloco(_, _, _, Y)), !.
 
-% Verdadeiro se um bloco qualquer na última coluna de Blocos é adequado
-% para uma matriz bi-dimensional.
+% Verdadeiro se um bloco qualquer na última coluna é adequado
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    put('a'),
-    (P + 1) mod C #= 0, P #> C - 1, P #< C * L - 1,
-    Esquerda #= P - 1,
-    Acima #= P + 1,
-    Abaixo #= P + C,
-    nth0(P, Blocos, bloco(X, _, Y, Z)),
-    nth0(Esquerda, Blocos, bloco(_, Z, _, _)),
-    nth0(Acima, Blocos, bloco(_, _, X, _)),
-    nth0(Abaixo, Blocos, bloco(Y, _, _, _)).
-
-% Verdadeiro se um bloco qualquer em Blocos é adequado
-% para uma matriz bi-dimensional.
-bloco_adequado(jogo(_, C, Blocos), P) :-
-    put('b'),
+    (P + 1) mod C #= 0, P #\= C - 1, P #\= (L * C - 1),
     Acima #= P - C,
+    Abaixo #= P + C,
+    Esquerda #= P - 1,
+    nth0(P, Blocos, bloco(X, _, Y, Z)),
+    nth0(Acima, Blocos, bloco(_, _, X, _)),
+    nth0(Abaixo, Blocos, bloco(Y, _, _, _)),
+    nth0(Esquerda, Blocos, bloco(_, Z, _, _)), !.
+
+% Verdadeiro se um bloco qualquer é adequado
+bloco_adequado(jogo(_, C, Blocos), P) :-
+    Acima #= P - C,
+    Abaixo #= P + C,
     Esquerda #= P - 1,
     Direita #= P + 1,
-    Abaixo #= P + C,
     nth0(P, Blocos, bloco(X, Y, Z, A)),
+    nth0(Acima, Blocos, bloco(_, _, X, _)),
     nth0(Abaixo, Blocos, bloco(Z, _, _, _)),
     nth0(Esquerda, Blocos, bloco(_, A, _, _)),
-    nth0(Acima, Blocos, bloco(_, _, X, _)),
     nth0(Direita, Blocos, bloco(_, _, _, Y)).
