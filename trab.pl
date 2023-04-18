@@ -274,34 +274,9 @@ blocos_adequados(Jogo, P) :-
 %  Verdadeiro se Jogo é uma estrutura jogo(L, C, Blocos), e o bloco na posição
 %  P de Blocos está em uma posição adequada.
 
-% Verdadeiro se o primeiro bloco é adequado para uma lista Blocos. 
-bloco_adequado(jogo(1, _, Blocos), 0) :-
-    % put('0'),
-    nth0(0, Blocos, bloco(_, X, _, _)),
-    nth0(1, Blocos, bloco(_, _, _, X)), !.
-
-% Verdadeiro se o último bloco é adequado para uma lista Blocos.
-bloco_adequado(jogo(1, C, Blocos), P) :-
-    % put('1'),
-    P #= C - 1,
-    Penultimo #= C - 2,
-    nth0(P, Blocos, bloco(_, _, _, X)),
-    nth0(Penultimo, Blocos, bloco(_, X, _, _)), !.
-
-% Verdadeiro se um elemento qualquer do meio da lista Blocos é adequado.
-bloco_adequado(jogo(1, C, Blocos), P) :-
-    % put('2'),
-    P #> 1, P #< C - 1,
-    Direita #= P + 1,
-    Esquerda #= P - 1,
-    nth0(P, Blocos, bloco(_, X, _, Y)),
-    nth0(Direita, Blocos, bloco(_, Y, _, _)),
-    nth0(Esquerda, Blocos, bloco(_, _, _, X)), !.
-
 % Verdadeiro se o bloco no canto superior esquerdo de Blocos é adequado 
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(_, C, Blocos), 0) :-
-    % put('3'),
     nth0(1, Blocos, bloco(_, _, _, X)),
     nth0(C, Blocos, bloco(Y, _, _, _)),
     nth0(0, Blocos, bloco(_, X, Y, _)), !.
@@ -309,7 +284,6 @@ bloco_adequado(jogo(_, C, Blocos), 0) :-
 % Verdadeiro se o bloco no canto superior direito de Blocos é adequado
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(_, C, Blocos), P) :-
-    % put('4'),
     P #= C - 1,
     Esquerda #= P - 1,
     Abaixo #= P + C,
@@ -320,7 +294,6 @@ bloco_adequado(jogo(_, C, Blocos), P) :-
 % Verdadeiro se o bloco no canto inferior direito de Blocos é adequado
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    % put('5'),
     P #= (L * C - 1),
     Esquerda #= P - 1,
     Acima #= P - C,
@@ -331,7 +304,6 @@ bloco_adequado(jogo(L, C, Blocos), P) :-
 % Verdadeiro se o bloco no canto inferior esquerdo de Blocos é adequado
 % para uma matriz bi-dimensional.
 bloco_adequado(jogo(L, C, Blocos), P) :-
-    % put('6'),
     P #= (L * C - L),
     Direita #= P + 1,
     Acima #= P - C,
